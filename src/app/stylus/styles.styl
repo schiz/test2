@@ -2,6 +2,8 @@
 @import 'partials/mixins.styl'
 @import 'partials/variables.styl'
 @import 'partials/svg-sprite.styl'
+@import 'partials/svg-sprite.styl'
+@import 'partials/png-sprite.styl'
 
 // Lost grid setups
 // @lost gutter 24px
@@ -74,41 +76,34 @@ hr
   border 0
   border-top 1px solid #dce0e0
 
-// Fonts
-// @font-face {
-//   font-family: 'MuseoSlab';
-//   src: url('../fonts/museoslab100/museo_slab_100-webfont.eot');
-//   src: url('../fonts/museoslab100/museo_slab_100-webfont.eot?#iefix') format('embedded-opentype'),
-//        url('../fonts/museoslab100/museo_slab_100-webfont.woff2') format('woff2'),
-//        url('../fonts/museoslab100/museo_slab_100-webfont.woff') format('woff'),
-//        url('../fonts/museoslab100/museo_slab_100-webfont.ttf') format('truetype'),
-//        url('../fonts/museoslab100/museo_slab_100-webfont.svg#museo_slab100') format('svg');
-//   font-weight: normal;
-//   font-style: normal;
-// }
+@font-face {
+  font-family: 'GloberSemibold';
+  src: url('../fonts/glober-semibold/glober_semibold.eot');
+  src: url('../fonts/glober-semibold/glober_semibold.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/glober-semibold/glober_semibold.woff2') format('woff2'),
+       url('../fonts/glober-semibold/glober_semibold.woff') format('woff'),
+       url('../fonts/glober-semibold/glober_semibold.ttf') format('truetype'),
+       url('../fonts/glober-semibold/glober_semibold.svg#globersemibold_free') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
-// @font-face {
-//     font-family: 'MuseoSlabSemiBold';
-//     src: url('../fonts/museoslab300/museo_slab_300-webfont.eot');
-//     src: url('../fonts/museoslab300/museo_slab_300-webfont.eot?#iefix') format('embedded-opentype'),
-//          url('../fonts/museoslab300/museo_slab_300-webfont.woff2') format('woff2'),
-//          url('../fonts/museoslab300/museo_slab_300-webfont.woff') format('woff'),
-//          url('../fonts/museoslab300/museo_slab_300-webfont.ttf') format('truetype'),
-//          url('../fonts/museoslab300/museo_slab_300-webfont.svg#museo_slab300') format('svg');
-//     font-weight: normal;
-//     font-style: normal;
-// }
+@font-face {
+  font-family: 'GloberThin';
+  src: url('../fonts/glober-thin/glober_thin.eot');
+  src: url('../fonts/glober-thin/glober_thin.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/glober-thin/glober_thin.woff2') format('woff2'),
+       url('../fonts/glober-thin/glober_thin.woff') format('woff'),
+       url('../fonts/glober-thin/glober_thin.ttf') format('truetype'),
+       url('../fonts/glober-thin/glober_thin.svg#globerthin_free') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
-// @font-face {
-//     font-family: 'MuseoSlabBold';
-//     src: url('../fonts/museoslab500/museo_slab_500-webfont.eot');
-//     src: url('../fonts/museoslab500/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),
-//          url('../fonts/museoslab500/museo_slab_500-webfont.woff2') format('woff2'),
-//          url('../fonts/museoslab500/museo_slab_500-webfont.woff') format('woff'),
-//          url('../fonts/museoslab500/museo_slab_500-webfont.ttf') format('truetype'),
-//          url('../fonts/museoslab500/museo_slab_500-webfont.svg#museo_slab500') format('svg');
-//     font-weight: normal;
-//     font-style: normal;
-// }
+
 
 body
+  clearfix()
+  
+.container
+  lost-center 1180px

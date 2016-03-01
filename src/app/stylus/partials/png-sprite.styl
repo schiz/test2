@@ -1,0 +1,106 @@
+bgi_img_x1 = url('sprite/png-sprite.png')
+
+.s-global
+  background-image bgi_img_x1
+  display: inline-block;
+  background-repeat: no-repeat;
+
+/* i.s-global.s-health */
+$health = 0px 47px 0px -47px 96px 30px 259px 137px 'sprite/png-sprite.png' 'health';
+.s-health {
+  background-position: $health[2] $health[3];
+  width: $health[4];
+  height: $health[5];
+}
+
+/* i.s-global.s-leisure */
+$leisure = 0px 77px 0px -77px 96px 30px 259px 137px 'sprite/png-sprite.png' 'leisure';
+.s-leisure {
+  background-position: $leisure[2] $leisure[3];
+  width: $leisure[4];
+  height: $leisure[5];
+}
+
+/* i.s-global.s-logo */
+$logo = 0px 0px 0px 0px 163px 47px 259px 137px 'sprite/png-sprite.png' 'logo';
+.s-logo {
+  background-position: $logo[2] $logo[3];
+  width: $logo[4];
+  height: $logo[5];
+}
+
+/* i.s-global.s-luxury */
+$luxury = 0px 107px 0px -107px 96px 30px 259px 137px 'sprite/png-sprite.png' 'luxury';
+.s-luxury {
+  background-position: $luxury[2] $luxury[3];
+  width: $luxury[4];
+  height: $luxury[5];
+}
+
+/* i.s-global.s-mice */
+$mice = 163px 0px -163px 0px 96px 30px 259px 137px 'sprite/png-sprite.png' 'mice';
+.s-mice {
+  background-position: $mice[2] $mice[3];
+  width: $mice[4];
+  height: $mice[5];
+}
+
+
+$spritesheet_width = 259px;
+$spritesheet_height = 137px;
+$spritesheet_image = 'sprite/png-sprite.png';
+$spritesheet_sprites = $health $leisure $logo $luxury $mice;
+$spritesheet = 259px 137px 'sprite/png-sprite.png' $spritesheet_sprites;
+
+/*
+The provided mixins are intended to be used with the array-like variables
+
+.icon-home {
+  spriteWidth($icon_home)
+}
+
+.icon-email {
+  sprite($icon_email)
+}
+*/
+
+spriteWidth($sprite) {
+  width: $sprite[4];
+}
+
+spriteHeight($sprite) {
+  height: $sprite[5];
+}
+
+spritePosition($sprite) {
+  background-position: $sprite[2] $sprite[3];
+}
+
+spriteImage($sprite) {
+  background-image: url($sprite[8]);
+}
+
+sprite($sprite) {
+  spriteImage($sprite)
+  spritePosition($sprite)
+  spriteWidth($sprite)
+  spriteHeight($sprite)
+}
+
+/*
+The `sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of Stylus
+
+This must be run when you have at least 2 sprites.
+  If run with a single sprite, then there will be reference errors.
+
+sprites($spritesheet_sprites);
+*/
+sprites($sprites) {
+  for $sprite in $sprites {
+    $sprite_name = $sprite[9];
+    .{$sprite_name} {
+      sprite($sprite);
+    }
+  }
+}

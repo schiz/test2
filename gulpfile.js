@@ -5,6 +5,10 @@ var gulp             = require('gulp'),
     plumber          = require('gulp-plumber'),
     del              = require('del'),
     imagemin         = require('gulp-imagemin'),
+    imageminPngquant = require('imagemin-pngquant'),
+    spritesmith      = require('gulp.spritesmith'),
+    merge            = require('merge-stream'),
+    buffer           = require('vinyl-buffer'),
     changed          = require('gulp-changed'),
     svgSprite        = require('gulp-svg-sprite'),
     jade             = require('gulp-jade'),
@@ -36,6 +40,9 @@ var path = {
     fonts: 'src/app/fonts/**/*.*',
     initial_img: 'src/app/img/initial/**/*.*',
     compressed_img: 'src/app/img/compressed/',
+    imgForSprite: 'src/app/img/compressed/*.png',
+    imgForRetinaSprite: 'src/app/img/compressed/*@2x.png',
+    spriteCss: 'src/app/stylus/partials/',
     del_compressed_img: 'src/app/img/compressed/*',
     compressed_img_bkg: 'src/app/img/compressed/bkg/**/*.*',
     minified_svg: 'src/app/img/compressed/ico/**/*.svg',
@@ -57,7 +64,8 @@ var path = {
     svg_sprite: 'src/dist/css/sprite/',
     minified_html: 'src/dist/',
     css: 'src/dist/css/',
-    js: 'src/dist/js/'
+    js: 'src/dist/js/',
+    pngSprite: 'src/dist/css/sprite/'
   }
 };
 
@@ -144,11 +152,43 @@ function createSpriteSvg() {
     });
 }
 
+// config for png spriting
+PngSpriteOpts = {
+  // set params for x2 retina sprite
+  retinaSrcFilter: [path.app.imgForRetinaSprite], // IMPORTANT! : both x1 and x2 retina images should be in the same folder
+  retinaImgName: 'png-sprite@2x.png',
+  retinaImgPath: 'sprite/png-sprite@2x.png',
+  // set params for x1 sprite
+  imgName: 'png-sprite.png',
+  cssName: 'png-sprite.styl',
+  imgPath: 'sprite/png-sprite.png',
+  cssTemplate: 'stylus.template.handlebars'
+  // To optimize amount of output code in .styl default templates were changed.
+  // Refactored template: temp2/stylus.template.handlebars
+  // Initial default templates: 'temp2/node_modules/gulp.spritesmith/node_modules/spritesheet-templates/lib/'
+};
+
+function createSprite() {
+  var spriteData = gulp.src(path.app.imgForSprite)
+    .pipe(plumber())
+    .pipe(spritesmith(PngSpriteOpts));
+
+  var imgStream = spriteData.img
+    .pipe(buffer())
+    .pipe(imageminPngquant({quality: '65-80', speed: 4})())
+    .pipe(gulp.dest(path.dist.pngSprite));
+
+  var cssStream = spriteData.css
+    .pipe(gulp.dest(path.app.spriteCss));
+
+  return merge(imgStream, cssStream);
+}
+
 function compileJade() {
   gulp.src(path.app.jade)
     .pipe(plumber())
     .pipe(jade())
-    .pipe(gzip(gzip_opts))
+    // .pipe(gzip(gzip_opts))
     .pipe(gulp.dest(path.dist.minified_html))
     .pipe(reload({stream: true}));
 }
@@ -171,7 +211,7 @@ function compileStylus() {
     }))
     .pipe(autoprefixer()) 
     .pipe(cssshrink())
-    .pipe(gzip(gzip_opts))
+    // .pipe(gzip(gzip_opts))
     .pipe(gulp.dest(path.dist.css))
     .pipe(reload({stream: true}));
 }
@@ -183,7 +223,7 @@ function compileJS() {
     ])
     .pipe(concat('app.js', {newLine: ';'}))
     .pipe(uglify())
-    .pipe(gzip(gzip_opts))
+    // .pipe(gzip(gzip_opts))
     .pipe(gulp.dest(path.dist.js))
     .pipe(reload({stream: true}));
 }
@@ -215,13 +255,18 @@ gulp.task('createSpriteSvg', ['minifyImg'], function() {
   return createSpriteSvg();
 });
 
+// Create sprite (x1 and x2 retina) from .png pics
+gulp.task('createSprite', ['minifyImg'], function() {
+  return createSprite();
+});
+
 // Compile Jade
 gulp.task('compileJade', ['emptyFolders'], function() {
   return compileJade();
 });
 
 // Compile stylus
-gulp.task('compileStylus', ['createSpriteSvg'], function() {
+gulp.task('compileStylus', ['createSprite'], function() {
   return compileStylus();
 });
 
@@ -241,6 +286,7 @@ gulp.task('build', [
   'copyFonts',
   'minifyImg',
   'createSpriteSvg',
+  'createSprite',
   'compileJade',
   'compileStylus',
   'compileJS',
@@ -254,12 +300,12 @@ var serverConfig = {
   server: {
     baseDir: "src/dist/",
     // Comment LoC 257 for non-gzip build.
-    middleware: [compress()]
+    // middleware: [compress()]
     // Uncomment LoC 259 - 262 for non-gzip build.
-    // middleware: function (req, res, next) {
-    //   res.setHeader('Access-Control-Allow-Origin', '*');
-    //   next();
-    // }
+    middleware: function (req, res, next) {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      next();
+    }
   },
   files: ['src/dist/*.html', 'src/dist/css/*.css', 'src/dist/css/sprite/*.svg', 'src/dist/js/*.js'],
   tunnel: false,
@@ -271,18 +317,18 @@ var serverConfig = {
 };
 
 gulp.task('webserver', ['build'], function () {
-  // Uncomment LoC 275 for non-gzip build.
-  // browserSync.init(serverConfig);
+  // Uncomment LoC 320 for non-gzip build.
+  browserSync.init(serverConfig);
 
-  // Comment LoC 278 - 285 for non-gzip build.
-  browserSync.init(
-    serverConfig,
-    function (err, bs) {
-      bs.addMiddleware("*", middleware, {
-        override: true
-      });
-    }
-  );
+  // Comment LoC 323 - 331 for non-gzip build.
+  // browserSync.init(
+  //   serverConfig,
+  //   function (err, bs) {
+  //     bs.addMiddleware("*", middleware, {
+  //       override: true
+  //     });
+  //   }
+  // );
 });
 
 
